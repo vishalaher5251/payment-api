@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="payment" format="json">
+      <types:shape format="weave" example="metadata/payments.json"><![CDATA[%dw 2.0
+
+type payment = Array<{|  customerNumber: Number {"typeId": "int"},   checkNumber: String,   paymentDate: String,   amount: Number {"typeId": "int"}|}> {"example": "[{\\\"customerNumber\\\":10001,\\\"checkNumber\\\":\\\"JT202004020330\\\",\\\"paymentDate\\\":\\\"2020-04-02\\\",\\\"amount\\\":64999}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#72c58e75-7318-4494-b2a3-524ccee8b530">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="payment"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#fee74927-c2a4-4c0f-a2e9-3e764f28bbc7">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="payment"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

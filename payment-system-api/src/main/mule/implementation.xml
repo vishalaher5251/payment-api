@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="GETallPaymentDataFlow" doc:id="055f0308-c6fc-4e74-b581-b21758e8b087" >
+		<choice doc:name="Choice" doc:id="5a359900-a30b-42d4-9114-a313e2036b5f" >
+			<when expression="#[(attributes.queryParams.customerNumber != null) and (attributes.queryParams.checkNumber != null)]">
+				<db:select doc:name="Select By customerNumber and checkNumber" doc:id="6f10442a-aec7-48d6-9fa0-81f0b08904f8" config-ref="Database_Config">
+					<db:sql><![CDATA[select * from Payments where customerNumber = :CuN and checkNumber = :ChN;]]></db:sql>
+					<db:input-parameters><![CDATA[#[{
+	CuN: attributes.queryParams.customerNumber,
+	ChN: attributes.queryParams.checkNumber
+}]]]></db:input-parameters>
+				</db:select>
+				<ee:transform doc:name="Transforming to JSON" doc:id="72c58e75-7318-4494-b2a3-524ccee8b530" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	customerNumber: payload01.customerNumber,
+	checkNumber: payload01.checkNumber,
+	paymentDate: payload01.paymentDate as String default "",
+	amount: payload01.amount default 0
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression="#[attributes.queryParams.customerNumber != null]">
+				<db:select doc:name="Select By customerNumber" doc:id="ed3a228b-d598-4274-9dd4-52fe72dd8fef" config-ref="Database_Config">
+					<db:sql ><![CDATA[select * from Payments where customerNumber = :CuN;]]></db:sql>
+					<db:input-parameters ><![CDATA[#[{
+	CuN: attributes.queryParams.customerNumber
+}]]]></db:input-parameters>
+				</db:select>
+				<ee:transform doc:name="Transforming to JSON" doc:id="10725d38-4e8c-4269-b755-10e3e55c6afa" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	customerNumber: payload01.customerNumber,
+	checkNumber: payload01.checkNumber,
+	paymentDate: payload01.paymentDate as String default "",
+	amount: payload01.amount default 0
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<db:select doc:name="Select All Payments" doc:id="3cebd8bb-49dc-4a20-a986-63807d9d6be5" config-ref="Database_Config">
+					<db:sql ><![CDATA[select * from Payments;]]></db:sql>
+				</db:select>
+				<ee:transform doc:name="Transforming to JSON" doc:id="fee74927-c2a4-4c0f-a2e9-3e764f28bbc7" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	customerNumber: payload01.customerNumber,
+	checkNumber: payload01.checkNumber,
+	paymentDate: payload01.paymentDate as String default "",
+	amount: payload01.amount default 0
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="DELETEPaymentDetailsFlow" doc:id="8001c5b9-da52-42a8-acb8-6e00fe0a24d7" >
+		<db:delete doc:name="Delete By customerNumber and checkNumber" doc:id="bb4eb804-2341-4ecb-9d3d-b57e429e5678" config-ref="Database_Config">
+			<db:sql ><![CDATA[delete from Payments where customerNumber = :CuN and checkNumber = :ChN;]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	CuN: attributes.queryParams.customerNumber,
+	ChN: attributes.queryParams.checkNumber
+}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Success Response" doc:id="213ec6cf-ee82-4a80-8c43-f625c80338f5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Payment Details for the Transaction are Deleted."
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<sub-flow name="VariableSub_Flow" doc:id="cf373829-1d31-4fc9-9925-c944fe42ace9" >
+		<set-variable value="#[payload.customerNumber]" doc:name="Customer Number" doc:id="9e0ff6ba-209b-44db-a40f-2cab72d7d9e7" variableName="customerNumber"/>
+		<set-variable value='#[payload.checkNumber default ("CN" ++ randomInt(1000000) ++ now() as String {format: "yyyyMMdd"} ++ randomInt(10000000))]' doc:name="Check Number" doc:id="4f79bc59-c576-42c5-94c5-3c0247fc877e" variableName="checkNumber"/>
+		<set-variable value="#[payload.paymentDate default now()]" doc:name="Payment Date" doc:id="fc6bdc98-c527-428e-902e-86d2e0f9151e" variableName="paymentDate"/>
+		<set-variable value="#[payload.amount]" doc:name="Amount" doc:id="9794f8d9-1b59-4fd5-ab0d-567e053e990a" variableName="amount"/>
+	</sub-flow>
+	<flow name="POSTPaymentDetailsFlow" doc:id="01a5e1eb-a2e8-47e3-b73f-e27a3b7f7c0a" >
+		<flow-ref doc:name="Variable Sub_Flow Reference" doc:id="04ab761f-b645-4421-a52c-5dfdde4be1ce" name="VariableSub_Flow"/>
+		<db:insert doc:name="Insert" doc:id="45ecd3f3-cb80-42b0-afb0-18b6c02c962b" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into Payments(customerNumber, checkNumber, paymentDate, amount) values(:CuN, :ChN, :Date, :amount)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	CuN: vars.customerNumber,
+	ChN: vars.checkNumber,
+	Date: vars.paymentDate,
+	amount: vars.amount
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Success Response" doc:id="8f4c403f-d2c2-4d0c-b490-4321cd9ee86b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Payment Details added."
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

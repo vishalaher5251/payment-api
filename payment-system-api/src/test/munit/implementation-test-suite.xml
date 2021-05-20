@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="implementation-test-suite.xml" />
+	<munit:test name="implementation-test-suite-GETallPaymentDataFlowTest" doc:id="3f51f05d-d75b-4b5a-bc9b-d6dcf0489d12" description="Test">
+		<munit:execution >
+			<munit:set-null-payload doc:name="Set null payload" doc:id="432624e4-ba76-440b-bbb6-05cf2155d12e" />
+			<flow-ref doc:name="Flow-ref to GETallPaymentDataFlow" doc:id="dca32462-fe61-4d3e-99b7-13d55139d010" name="GETallPaymentDataFlow"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="1847cd26-90da-4db8-8020-c1355e34d016" message='"Retrieved Null Payload"' expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-GETallPaymentDataFlowTest1" doc:id="9cd269b6-3efd-42ad-a7a6-4407371dedd3" description="Test">
+		<munit:execution >
+			<munit:set-null-payload doc:name="Set null payload" doc:id="5994e568-2945-49bb-b049-3be58787896c" />
+			<munit:set-event doc:name="Set Event" doc:id="feaaed13-8807-438b-90d9-c7a7e0bbc352">
+				<munit:attributes value="#[queryParams:{ customerNumber: '10001', checkNumber: 'JT202004020330'}]" mediaType="application/java" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to GETallPaymentDataFlow" doc:id="67efa225-cd93-4df2-9364-023fa0a9f6c3" name="GETallPaymentDataFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="9c778916-81a8-4f70-a7b4-09f7814f6da9" is="#[MunitTools::notNullValue()]" message='"Retrieved Null Payload"' expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-GETallPaymentDataFlowTest2" doc:id="c34e6ae9-9463-4686-a64b-8d33ec2ddd95" description="Test">
+		<munit:execution >
+			<munit:set-null-payload doc:name="Set null payload" doc:id="45ab6c8d-aa36-4d1c-be84-d81538433e66" />
+			<munit:set-event doc:name="Set Event" doc:id="576f07c8-db14-4a09-ae58-c7ba9dab664b" >
+				<munit:attributes value="#[queryParams:{ customerNumber: '10001'}]" mediaType="application/java" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to GETallPaymentDataFlow" doc:id="d61abaab-7f37-44d6-85c3-cf1838b0d7f0" name="GETallPaymentDataFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="c1adc3d9-21fb-4d73-b57b-f879e085f285" is="#[MunitTools::notNullValue()]" message='"Retrieved Null Payload"' expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-DELETEPaymentDetailsFlowTest" doc:id="f976ff7c-a110-41f1-9e18-f47eed11f0be" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="41b3ee04-0bbd-456a-9cb2-395c2bc96c88" processor="db:delete">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="bb4eb804-2341-4ecb-9d3d-b57e429e5678" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<munit:set-null-payload doc:name="Set null payload" doc:id="e57f2dfb-afd3-4728-965b-d2d815d7cf1c" />
+			<flow-ref doc:name="Flow-ref to DELETEPaymentDetailsFlow" doc:id="e3aadf4f-2562-47e5-8cfc-4c1f193c2906" name="DELETEPaymentDetailsFlow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="30191fe0-8dd8-4d92-ba0a-f7511f2e9aca" actual="#[payload]" expected='#[{&#10;	message: "Payment Details for the Transaction are Deleted."&#10;}]' />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-VariableSub_FlowTest" doc:id="b8975453-2a5e-4e61-b510-aa73de5d7569" description="Test">
+		<munit:execution>
+			<munit:set-null-payload doc:name="Set null payload" doc:id="eb89ddb9-ccde-416b-8a0b-f48d8420338e" />
+			<munit:set-event doc:name="Set Event" doc:id="e6320a61-b37d-4dd8-b2ac-2a6dc315f3b3">
+				<munit:payload value=' {&#10;        "customerNumber": 10001,&#10;        "checkNumber": "JT202004020330",&#10;        "paymentDate": "2020-04-02T00:00:00",&#10;        "amount": 64999.0&#10;    }' mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to VariableSub_Flow" doc:id="249be275-7cd3-47c6-bd2a-1c38be3f4a30" name="VariableSub_Flow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-equals doc:name="Assert equals CustomerNumber" doc:id="a4f6ab3e-13d1-4e4f-9643-f6d923d6e639" actual="#[vars.customerNumber]" expected="#[10001]" message="Check CustomerNumber" />
+			<munit-tools:assert-equals doc:name="Assert equals CheckNumber" doc:id="3cad2563-313d-4528-b2ec-85abcdd37afe" actual="#[vars.checkNumber]" expected='#["JT202004020330"]' message="Check Number Invalid " />
+			<munit-tools:assert-equals doc:name="Assert equals PaymentDate" doc:id="264aa260-fe99-4272-b5a6-5ba74e17a244" actual="#[vars.paymentDate]" expected='#["2020-04-02T00:00:00"]' message="Check Payment Date" />
+			<munit-tools:assert-equals doc:name="Assert equals Amount" doc:id="556a2210-c0bd-474c-ae28-10043fc2469d" actual="#[vars.amount]" expected="#[64999.0]" message="Check Amount Details" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-POSTPaymentDetailsFlowTest" doc:id="707e3ad9-d20d-4ab2-bd90-c12a3d480f34" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="08952baf-4dcf-4ebc-a46f-93391b17dc62" processor="db:insert">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="45ecd3f3-cb80-42b0-afb0-18b6c02c962b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<munit:set-null-payload doc:name="Set null payload" doc:id="4ef17500-ce15-4d8f-a460-d6d951e99ddc" />
+			<munit:set-event doc:name="Set Event" doc:id="5c08ee63-b513-4ee5-a719-82f31618cbbe">
+				<munit:payload value='{&#10;        "customerNumber": 10001,&#10;        "checkNumber": "JT202004020330",&#10;        "paymentDate": "2020-04-02T00:00:00",&#10;        "amount": 64999.0&#10;    }' mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to POSTPaymentDetailsFlow" doc:id="86d453da-9047-4461-b7af-22ec636d39c0" name="POSTPaymentDetailsFlow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="36a9259d-de53-4f51-bb1e-5b215a043474" actual="#[payload]" expected='#[{&#10;	message: "Payment Details added."&#10;}]' message="The Payload didn't match." />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
