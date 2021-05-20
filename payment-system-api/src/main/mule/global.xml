@@ -14,7 +14,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 	<http:listener-config name="payments-api-httpListenerConfig">
         <http:listener-connection host="${http.host}" port="${http.port}" />
     </http:listener-config>
-	<configuration-properties doc:name="Configuration properties" doc:id="2fa9d431-a6ef-456c-b972-57664bd67520" file="payments-${env}.yaml" />
+	<configuration-properties doc:name="Configuration properties" doc:id="2fa9d431-a6ef-456c-b972-57664bd67520" file="payments-PROD.yaml" />
 	<configuration doc:name="Configuration" doc:id="bd12db3f-6800-4440-9d6a-b6aefae8bf23" defaultErrorHandler-ref="globalError_Handler" />
 	<error-handler name="globalError_Handler" doc:id="9c05a548-3cfd-422c-97b2-a25928f7ee82" >
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="96bf02cf-2f21-4101-a37b-a5929a46cc12" type="DB:CONNECTIVITY" >
